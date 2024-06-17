@@ -8,14 +8,14 @@ DATABASE_URL = settings.database_url
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-def init_db():
+def init_db(engine):
     from app.models.instance_model import Instance
     from app.models.user_model import User
     logging.info("Initializing the database.")
     Instance.metadata.create_all(bind=engine)
     User.metadata.create_all(bind=engine)
 
-def purge_db():
+def purge_db(engine):
     from app.models.instance_model import Instance
     from app.models.user_model import User
     logging.info("purging database.")

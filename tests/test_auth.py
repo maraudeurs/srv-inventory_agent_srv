@@ -7,20 +7,24 @@ from app.main import app
 from app.dependencies import get_db
 from app.auth.user_service import get_password_hash
 from app.models.user_model import User
-
+from app.models.database import init_db, purge_db
 
 ## mangage database for testing
 
-SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://test:test@infra-test.webdrone.fr:5432/provider_inventory"
+# SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://test:test@infra-test.webdrone.fr:5432/provider_inventory"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
 Base = declarative_base()
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base.metadata.create_all(bind=engine)
 
+User.metadata.drop_all(bind=engine)
+
 def override_get_db():
     try:
         db = TestingSessionLocal()
+        User.metadata.create_all(bind=engine)
         yield db
     finally:
         db.close()
@@ -48,13 +52,13 @@ client = TestClient(app)
 #     db.commit()
 #     db.close()
 
-# def test_create_user():
-#     response = client.post(
-#         "/v1/register/",
-#         json={"username": "testuser", "email": "test@example.com", "password": "password"}
-#     )
-#     assert response.status_code == 200
-#     assert response.json()["email"] == "test@example.com"
+def test_create_user():
+    response = client.post(
+        "/v1/register/",
+        json={"username": "testuser", "email": "test@example.com", "password": "password"}
+    )
+    assert response.status_code == 200
+    assert response.json()["email"] == "test@example.com"
 
 def test_login():
     response = client.post(
@@ -94,26 +98,3 @@ def test_unauthorized_user_me():
         "/v1/users/me/"
     )
     assert response.status_code == 401
-
-# ## temp instance test
-
-# def test_get_instances_unauthenticated():
-#     response = client.get("/instances/")
-#     assert response.status_code == 401
-#     assert response.json() == {"detail": "Not authenticated"}
-
-# def test_get_instances_authenticated(setup_database):
-#     login_response = client.post(
-#         "/token",
-#         data={"username": "testuser", "password": "password"}
-#     )
-#     access_token = login_response.json()["access_token"]
-#     response = client.get(
-#         "/instances/",
-#         headers={"Authorization": f"Bearer {access_token}"}
-#     )
-#     assert response.status_code == 200
-#     instances = response.json()
-#     assert len(instances) == 1
-#     assert instances[0]["name"] == "testinstance"
-#     assert instances[0]["description"] == "test description"
