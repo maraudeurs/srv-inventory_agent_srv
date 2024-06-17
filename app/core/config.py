@@ -5,6 +5,8 @@ class Settings(BaseSettings):
     database_url: str
     log_level: str
     app_name: str
+    discovery_generic_user: str
+    discovery_generic_password: str
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int

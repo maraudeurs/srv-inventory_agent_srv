@@ -53,15 +53,3 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 @router.get("/users/me/", response_model=User)
 async def read_users_me(current_user: Annotated[User, Depends(get_current_active_user)]):
     return current_user
-
-# @router.post("/users/", response_model=User)
-# def create_user(user: UserCreate, db: Session = Depends(get_db)):
-#     try:
-#         db_user = user_service.create_user(user)
-#     except ValueError as e:
-#         raise HTTPException(status_code=400, detail=str(e))
-#     return db_user
-
-# @router.get('/me', summary='Get details of currently logged in user', response_model=User)
-# async def get_me(user: User = Depends(user_service.get_current_user)):
-#     return user

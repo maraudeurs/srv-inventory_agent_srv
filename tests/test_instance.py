@@ -28,7 +28,7 @@ client = TestClient(app)
 
 
 def test_read_instance():
-    # Login the user to get a token
+    ## Login the user to get a token
     response = client.post(
         "/v1/token/",
         data={"username": "testuser", "password": "password"}
@@ -36,13 +36,64 @@ def test_read_instance():
     assert response.status_code == 200
     token = response.json()["token"]
 
-    # Access the protected route
+    ## Access the protected route
     response = client.get("/v1/instances/", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
 
 def test_read_instance_unauthorized():
-    # Attempt to access the protected route without a token
     response = client.get("/v1/instances/")
+    assert response.status_code == 401
+
+def test_post_instance():
+    response = client.post(
+        "/v1/instances/",
+        json={
+            "name": "test",
+            "description": "test",
+            "ip_v4" : "test",
+            "ip_v6" : "test",
+            "status" : "test",
+            "main_usage" : "test",
+            "location" : "test",
+            "tag" : "test",
+            "cloud_model" : "test",
+            "cloud_provider" : "test",
+            "provider_uuid" : "test",
+            "instance_memory" : "test",
+            "instance_cpu" : "test",
+            "update_date" : "test",
+            "creation_date" : "test"
+        },
+        auth=("discovery", "PyGOOKVC83jnIVa4A4NO4bNCeFDkyAifbuX9cQFPGZTDV8rIALotqz21uTOQqAjznO4AQnzcWN5y5DQPnLrdkjyqKuMCnJUl")
+    )
+    assert response.status_code == 200
+
+def test_post_instance_unauthorized():
+    response = client.post("/v1/instances/")
+    assert response.status_code == 401
+
+def test_post_instance_wrong_auth():
+    response = client.post(
+        "/v1/instances/",
+        json={
+            "name": "test",
+            "description": "test",
+            "ip_v4" : "test",
+            "ip_v6" : "test",
+            "status" : "test",
+            "main_usage" : "test",
+            "location" : "test",
+            "tag" : "test",
+            "cloud_model" : "test",
+            "cloud_provider" : "test",
+            "provider_uuid" : "test",
+            "instance_memory" : "test",
+            "instance_cpu" : "test",
+            "update_date" : "test",
+            "creation_date" : "test"
+        },
+        auth=("wronglogin", "wrongpassword")
+    )
     assert response.status_code == 401
 
 
