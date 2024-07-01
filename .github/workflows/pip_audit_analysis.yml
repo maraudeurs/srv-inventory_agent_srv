@@ -19,3 +19,5 @@ jobs:
 
       - name: run pip_audit
         uses: pypa/gh-action-pip-audit@v1.0.8
+        with:
+          summary: true
