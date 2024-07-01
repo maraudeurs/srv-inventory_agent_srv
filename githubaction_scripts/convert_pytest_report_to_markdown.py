@@ -13,18 +13,22 @@ def convert_to_markdown(report):
         for test in report['tests']:
             if test['outcome'] == 'failed':
                 md_lines.append(f"### {test['nodeid']}\n")
-                for failure in test['call']['crash']['traceback']:
-                    md_lines.append(f"```\n{failure}\n```\n")
+                if 'call' in test and 'crash' in test['call']:
+                    for failure in test['call']['crash']['traceback']:
+                        md_lines.append(f"```\n{failure}\n```\n")
+                elif 'setup' in test and 'crash' in test['setup']:
+                    for failure in test['setup']['crash']['traceback']:
+                        md_lines.append(f"```\n{failure}\n```\n")
+                elif 'teardown' in test and 'crash' in test['teardown']:
+                    for failure in test['teardown']['crash']['traceback']:
+                        md_lines.append(f"```\n{failure}\n```\n")
 
     return "\n".join(md_lines)
 
-# Load the pytest JSON report
-with open("pytest_report.json", "r") as json_file:
+with open("report.json", "r") as json_file:
     pytest_report = json.load(json_file)
 
-# Convert to Markdown
 markdown_report = convert_to_markdown(pytest_report)
 
-# Write the Markdown report to a file
-with open("pytest_report.md", "w") as md_file:
+with open("report.md", "w") as md_file:
     md_file.write(markdown_report)
