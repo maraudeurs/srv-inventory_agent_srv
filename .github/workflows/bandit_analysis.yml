@@ -1,0 +1,55 @@
+name: running bandit on python code
+run-name: bandit_analysis
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'test'
+
+env:
+  PYTHON_VERSION: 3.11
+
+jobs:
+  bandit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Bandit
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit
+
+      - name: Run Bandit
+        run: |
+          bandit -r . -f json -o bandit_report.json
+
+      - name: Upload Bandit Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: bandit-report
+          path: bandit_report.json
+
+  report:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run CTRF annotations
+        run: npx github-actions-ctrf bandit_report.jsonn
+        if: always()
+
+
