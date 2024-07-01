@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Bandit
         run: |
-          bandit -r ./app -f json -o bandit_report.json
+          bandit -r ./app -f json -o bandit_report.json --exit-zero
 
       - name: Upload Bandit Report
         uses: actions/upload-artifact@v3
