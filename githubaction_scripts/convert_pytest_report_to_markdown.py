@@ -25,10 +25,10 @@ def convert_to_markdown(report):
 
     return "\n".join(md_lines)
 
-with open("report.json", "r") as json_file:
+with open("pytest_report.json", "r") as json_file:
     pytest_report = json.load(json_file)
 
 markdown_report = convert_to_markdown(pytest_report)
 
-with open("report.md", "w") as md_file:
+with open("pytest_report.md", "w") as md_file:
     md_file.write(markdown_report)
