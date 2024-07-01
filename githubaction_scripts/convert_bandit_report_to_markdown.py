@@ -20,12 +20,12 @@ def convert_to_markdown(bandit_json):
     return "\n".join(md_lines)
 
 # Load the Bandit JSON report
-with open("../bandit_report.json", "r") as json_file:
+with open("bandit_report.json", "r") as json_file:
     bandit_report = json.load(json_file)
 
 # Convert to Markdown
 markdown_report = convert_to_markdown(bandit_report)
 
 # Write the Markdown report to a file
-with open("../bandit_report.md", "w") as md_file:
+with open("bandit_report.md", "w") as md_file:
     md_file.write(markdown_report)

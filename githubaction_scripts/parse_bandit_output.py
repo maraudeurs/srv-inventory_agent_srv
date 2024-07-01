@@ -1,7 +1,7 @@
 import json
 import sys
 
-with open('../bandit_report.json') as f:
+with open('bandit_report.json') as f:
     report = json.load(f)
 
 for result in report['results']:
