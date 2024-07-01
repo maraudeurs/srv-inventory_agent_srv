@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from typing import Annotated
 
-
 from app.models.user_model import User as ORMUser
 from app.schemas.user_schema import User, UserCreate
 from app.schemas.token_schema import Token, TokenData

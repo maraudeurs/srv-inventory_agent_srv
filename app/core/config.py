@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import logging
+import os
 
 class Settings(BaseSettings):
     database_url: str
@@ -14,4 +15,17 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
 
-settings = Settings()
+class TestSettings(Settings):
+    debug: bool = True
+
+    class Config:
+        env_file = "test.env"
+
+def get_settings(env: str) -> Settings:
+    if env == "test":
+        return TestSettings()
+    else:
+        return Settings()
+
+env = os.getenv("ENVIRONMENT", "test")
+settings = get_settings(env)

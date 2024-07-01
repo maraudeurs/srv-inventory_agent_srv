@@ -7,6 +7,9 @@ on:
       - 'main'
       - 'test'
 
+env:
+  ENVIRONMENT: test
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
