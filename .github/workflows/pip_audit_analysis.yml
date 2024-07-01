@@ -1,0 +1,16 @@
+name: running pip-audit on python code
+run-name: pip_audit_analysis
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'test'
+
+jobs:
+  pip_audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: pypa/gh-action-pip-audit@v1.0.0
+        with:
+          inputs: requirements.txt
