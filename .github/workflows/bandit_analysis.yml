@@ -49,8 +49,8 @@ jobs:
           path: bandit_report.md
         if: always()
 
-      - name: Display Bandit Report
-        run: cat bandit_report.md
+      - name: Add Bandit Report to Job Summary
+        run: cat bandit_report.md >> $GITHUB_STEP_SUMMARY
         if: always()
 
       - name: Create Bandit Report Comment
