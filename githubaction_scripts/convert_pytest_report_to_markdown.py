@@ -5,7 +5,7 @@ def convert_to_markdown(report):
     md_lines.append("# Pytest Report\n")
     md_lines.append(f"**Total Tests:** {report['summary']['total']}")
     md_lines.append(f"**Passed:** {report['summary']['passed']}")
-    md_lines.append(f"**Failed:** {report['summary']['failed']}")
+    md_lines.append(f"**Failed:** {report['summary'].get('failed', 0)}")
     md_lines.append(f"**Skipped:** {report['summary']['skipped']}\n")
 
     if report['summary']['failed'] > 0:
