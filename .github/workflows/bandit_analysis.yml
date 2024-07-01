@@ -41,35 +41,15 @@ jobs:
           name: bandit-report
           path: bandit_report.json
 
-      - name: Display Bandit Report
-        id: bandit
-        run: cat bandit_report.json
+      - name: Convert Bandit Report to CTRF
+        run: python convert_bandit_report_to_ctrf.py
 
-      - name: Create Bandit Report Comment
-        uses: actions/github-script@v6
+      - name: Upload CTRF Report
+        uses: actions/upload-artifact@v3
         with:
-          script: |
-            const fs = require('fs');
-            const report = JSON.parse(fs.readFileSync('bandit_report.json', 'utf8'));
+          name: bandit-report-ctrf
+          path: bandit_report_crtf.json
 
-            let summary = "## Bandit Security Analysis Report\n";
-            summary += "| Issue Severity | Issue Confidence | File | Line | Issue Text |\n";
-            summary += "| --- | --- | --- | --- | --- |\n";
-            report.results.forEach(issue => {
-              summary += `| ${issue.issue_severity} | ${issue.issue_confidence} | ${issue.filename} | ${issue.line_number} | ${issue.issue_text} |\n`;
-            });
-
-            if (report.results.length > 0) {
-              summary += "\n### Issues Summary\n";
-              summary += `**Total Issues Found:** ${report.results.length}\n`;
-            } else {
-              summary += "\n**No issues found.**\n";
-            }
-
-            const { GITHUB_SHA } = process.env;
-            await github.rest.issues.createComment({
-              ...context.repo,
-              issue_number: context.issue.number,
-              body: summary,
-            });
-
+      - name: Publish CTRF Test Summary Results
+        run: npx github-actions-ctrf bandit_report_crtf.json
+        if: always()
