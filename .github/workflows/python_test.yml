@@ -1,0 +1,22 @@
+name: running all python test
+run-name: pytest
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'test'
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run pytest
+        uses: pavelzw/pytest-action@v2
+        with:
+          verbose: true
+          emoji: true
+          job-summary: true
+          custom-arguments: '-q'
+          click-to-expand: true
+          report-title: 'srv_inventory_agent test report'

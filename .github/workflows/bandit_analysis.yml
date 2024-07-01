@@ -2,29 +2,36 @@ name: running bandit on python code
 run-name: bandit_analysis
 
 on:
-  push:
-    branches:
-      - 'main'
-      - 'test'
+  workflow_run:
+    workflows: ["pytest"]
+    types:
+      - completed
 
 env:
   PYTHON_VERSION: 3.11
 
 jobs:
-  bandit:
+  checkout:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
     steps:
 
       - name: Checkout
         uses: actions/checkout@v3
 
+  setup_python:
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
+  run_bandit:
+    runs-on: ubuntu-latest
+    needs: setup_python
+    steps:
 
       - name: Install Bandit
         run: |
@@ -35,6 +42,10 @@ jobs:
         run: |
           bandit -r ./app -f json -o bandit_report.json --exit-zero
 
+  report_bandit:
+    runs-on: ubuntu-latest
+    needs: run_bandit
+    steps:
       - name: Convert Bandit Report to Markdown
         run: python githubaction_scripts/convert_bandit_report_to_markdown.py
 
@@ -43,7 +54,7 @@ jobs:
         if: always()
 
       - name: Upload Bandit Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bandit-report
           path: bandit_report.md
@@ -52,18 +63,3 @@ jobs:
       - name: Add Bandit Report to Job Summary
         run: cat bandit_report.md >> $GITHUB_STEP_SUMMARY
         if: always()
-
-      - name: Create Bandit Report Comment
-        uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
-        with:
-          script: |
-            const fs = require('fs');
-            const report = fs.readFileSync('bandit_report.md', 'utf8');
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: report
-            });

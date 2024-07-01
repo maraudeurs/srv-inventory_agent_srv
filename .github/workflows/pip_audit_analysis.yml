@@ -2,10 +2,10 @@ name: running pip-audit on python code
 run-name: pip_audit_analysis
 
 on:
-  push:
-    branches:
-      - 'main'
-      - 'test'
+  workflow_run:
+    workflows: ["pytest"]
+    types:
+      - completed
 
 jobs:
   pip_audit:

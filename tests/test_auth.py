@@ -11,7 +11,6 @@ from app.models.database import init_db, purge_db
 
 ## mangage database for testing
 
-# SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://test:test@infra-test.webdrone.fr:5432/provider_inventory"
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
 Base = declarative_base()
