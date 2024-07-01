@@ -8,7 +8,7 @@ def convert_to_markdown(report):
     md_lines.append(f"**Failed:** {report['summary'].get('failed', 0)}")
     md_lines.append(f"**Skipped:** {report['summary'].get('skipped', 0)}\n")
 
-    if report['summary']['failed'] > 0:
+    if report['summary'].get('failed') > 0:
         md_lines.append("## Failed Tests:\n")
         for test in report['tests']:
             if test['outcome'] == 'failed':
