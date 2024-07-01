@@ -34,7 +34,7 @@ jobs:
         run: python -m pytest --json-report --json-report-file=pytest_report.json tests/
 
       - name: Convert JSON report to Markdown
-        run: python convert_pytest_report_to_markdown.py
+        run: python githubaction_scripts/convert_pytest_report_to_markdown.py
         if: always()
 
       - name: Upload json report as artifact
