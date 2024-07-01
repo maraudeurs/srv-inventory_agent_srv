@@ -39,17 +39,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bandit-report
-          path: bandit_report.json
+          path: reports/bandit_report.json
 
-      - name: Convert Bandit Report to CTRF
-        run: python convert_bandit_report_to_ctrf.py
-
-      - name: Upload CTRF Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: bandit-report-ctrf
-          path: bandit_report_crtf.json
-
-      - name: Publish CTRF Test Summary Results
-        run: npx github-actions-ctrf bandit_report_crtf.json
+      - name: Test Report
+        uses: dorny/test-reporter@v1
         if: always()
+        with:
+          name: bandit-fancy-report
+          path: reports/bandit_report.json
+          reporter: rspec-json ## see https://github.com/marketplace/actions/test-reporter#supported-formats
