@@ -28,17 +28,22 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: python -m pip install pytest-md pytest-emoji -r requirements.txt
+        run: python -m pip install pytest-json-report -r requirements.txt
 
       - name: Run pytest
-        run: python -m pytest tests/
+        run: python -m pytest --json-report --json-report-file=pytest_report.json tests/
 
-      - name: Run pytest
-        uses: pavelzw/pytest-action@v2
+      - name: Convert JSON report to Markdown
+        run: python convert_pytest_report_to_markdown.py
+        if: always()
+
+      - name: Upload json report as artifact
+        uses: actions/upload-artifact@v3
         with:
-          verbose: true
-          emoji: true
-          job-summary: true
-          custom-arguments: '-q'
-          click-to-expand: true
-          report-title: 'srv_inventory_agent test report'
+          name: pytest-json-report
+          path: pytest_report.md
+        if: always()
+
+      - name: Add pytest report to job summary
+        run: cat pytest_report.md >> $GITHUB_STEP_SUMMARY
+        if: always()
