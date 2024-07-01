@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Bandit
         run: |
-          bandit -r . -f json -o bandit_report.json
+          bandit -r ./app -f json -o bandit_report.json
 
       - name: Upload Bandit Report
         uses: actions/upload-artifact@v3
@@ -41,15 +41,8 @@ jobs:
           name: bandit-report
           path: bandit_report.json
 
-  report:
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Run CTRF annotations
-        run: npx github-actions-ctrf bandit_report.jsonn
+        run: npx github-actions-ctrf bandit_report.json
         if: always()
 
 
