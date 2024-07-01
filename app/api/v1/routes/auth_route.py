@@ -27,7 +27,7 @@ def register_user(payload: UserCreate, db: Session = Depends(get_db)):
     if user:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"User with email {payload.username} already exists",
+            detail=f"Email already registered",
         )
     user = create_user(db, payload)
     return user

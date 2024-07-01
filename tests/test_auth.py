@@ -51,25 +51,52 @@ client = TestClient(app)
 #     db.commit()
 #     db.close()
 
+@pytest.fixture(scope="module")
+def setup_database():
+    db = TestingSessionLocal()
+    db.add(test_user)
+    db.commit()
+    db.refresh(test_user)
+    yield db
+    db.delete(test_user)
+    db.query(User).delete()
+    db.commit()
+    db.close()
+
+def test_create_duplicate_user():
+    response = client.post(
+        "/v1/register/",
+        json={"username": "testuser2", "email": "testuser2@example.com", "password": "testpassword"}
+    )
+    assert response.status_code == 200
+
+    response = client.post(
+        "/v1/register/",
+        json={"username": "testuser2", "email": "testuser2@example.com", "password": "testpassword"}
+    )
+    assert response.status_code == 403
+    data = response.json()
+    assert data["detail"] == "Email already registered"
+
 def test_create_user():
     response = client.post(
         "/v1/register/",
-        json={"username": "testuser", "email": "test@example.com", "password": "password"}
+        json={"username": "testuser3", "email": "test3@example.com", "password": "password"}
     )
     assert response.status_code == 200
-    assert response.json()["email"] == "test@example.com"
+    assert response.json()["email"] == "test3@example.com"
 
 def test_login():
     response = client.post(
         "/v1/token/",
-        data={"username": "testuser", "password": "password"}
+        data={"username": "testuser3", "password": "password"}
     )
     assert response.status_code == 200
 
 def test_invalid_login():
     response = client.post(
         "/v1/token/",
-        data={"username": "testuser", "email": "test@example.com", "password": "wrongpassword"}
+        data={"username": "testuser3", "email": "test@example.com", "password": "wrongpassword"}
     )
     assert response.status_code == 401
     data = response.json()
@@ -78,7 +105,7 @@ def test_invalid_login():
 def test_user_me():
     login_response = client.post(
         "/v1/token/",
-        data={"username": "testuser", "password": "password"}
+        data={"username": "testuser3", "password": "password"}
     )
     assert login_response.status_code == 200
     data = login_response.json()
