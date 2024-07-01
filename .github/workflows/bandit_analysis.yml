@@ -36,16 +36,22 @@ jobs:
           bandit -r ./app -f json -o bandit_report.json --exit-zero
 
       - name: Convert Bandit Report to Markdown
-        run: python convert_bandit_report_to_markdown.py
+        run: python githubaction_scripts/convert_bandit_report_to_markdown.py
+
+      - name: Parse Bandit Report for High Severity Issues
+        run: python githubaction_scripts/parse_bandit_output.py
+        if: always()
 
       - name: Upload Bandit Report
         uses: actions/upload-artifact@v3
         with:
           name: bandit-report
           path: bandit_report.md
+        if: always()
 
       - name: Display Bandit Report
         run: cat bandit_report.md
+        if: always()
 
       - name: Create Bandit Report Comment
         uses: actions/github-script@v6
