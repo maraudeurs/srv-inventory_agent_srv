@@ -21,9 +21,14 @@ def read_instances(db: Session = Depends(get_db), current_user: User= Depends(ge
 
 @router.post("/instances/", response_model=Instance)
 def create_instance(instance_data: InstanceCreate, db: Session = Depends(get_db), credentials: HTTPBasicCredentials = Depends(authenticate)):
-    """send instance to inventory server
-    Args:
-    - instance: instance object
     """
-    instance = instance_service.create_instance(db, instance_data.dict())
+    Create instance in inventory server database
+
+    Args:
+        instance: instance object
+    """
+
+    print(instance_data)
+
+    instance = instance_service.create_instance(db, instance_data)
     return instance

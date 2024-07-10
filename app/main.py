@@ -2,14 +2,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+from app.models.database import SessionLocal, engine
+
 from app.api.v1.routes import instance_route, auth_route
 from app.models.database import init_db, purge_db
+
+
 
 ## Manage lifespan event
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     ## at app start
-    init_db()
+    init_db(engine)
     yield
     ## at app shutdown
     # purge_db()
