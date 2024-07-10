@@ -18,15 +18,20 @@ class InstanceService:
         try:
             ## instance does not exist then update data accordingly
             db_instance_data = manage_instance_creation_date(db, instance_data)
-            # db_instance = InstanceORM(**db_instance_data.dict())
 
             db_instance = InstanceORM(
                 name=instance_data.name,
+                description=instance_data.description,
+                main_ipv4=instance_data.main_ipv4,
                 status=instance_data.status,
-                instance_memory=instance_data.instance_memory,
-                instance_cpu=instance_data.instance_cpu,
+                # instance_memory=instance_data.instance_memory,
+                # instance_cpu=instance_data.instance_cpu,
                 inventory_source_method=instance_data.inventory_source_method,
+                system_os=instance_data.system_os,
+                system_release=instance_data.system_release,
+                system_architecture=instance_data.system_architecture,
                 hostname=instance_data.hostname,
+                python_version=instance_data.python_version,
                 update_date=instance_data.update_date,
                 creation_date=instance_data.creation_date
             )

@@ -56,8 +56,8 @@ class InstanceBase(BaseModel):
     cloud_model: Optional[str] = None
     cloud_provider: Optional[str] = None
     provider_uuid: Optional[str] = None
-    instance_memory: int = 0
-    instance_cpu: int = 0
+    instance_memory: Optional[int] = None
+    instance_cpu: Optional[int] = None
     in_bandwidth: Optional[str] = None
     out_bandwidth: Optional[str] = None
     cloud_service_type: Optional[str] = None
