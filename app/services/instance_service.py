@@ -6,6 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from app.models.database_data_handler_utils import manage_instance_creation_date
 from app.models.instance_model import Instance as InstanceORM, Ipv4 as Ipv4ORM, Ipv6 as Ipv6ORM, VirtualizationMethod as VirtualizationMethodORM
 from app.schemas.instance_schema import Instance, InstanceCreate, Ipv4, Ipv6, Virtualization_method
+from app.dependencies import logger
 
 class InstanceService:
     def get_instances(self, db: Session) -> List[InstanceORM]:
@@ -14,6 +15,7 @@ class InstanceService:
     def create_instance(self, db: Session, instance_data: InstanceCreate) -> Instance:
         instance_in_db = db.query(InstanceORM).filter(InstanceORM.main_ipv4 == instance_data.main_ipv4).first()
         if instance_in_db:
+            logger.debug(f"Instance with ipv4 address :{instance_data.main_ipv4} already exist in database")
             raise HTTPException(status_code=400, detail=f"Instance already registered {instance_data.main_ipv4}")
         try:
             ## instance does not exist then update data accordingly
@@ -36,15 +38,9 @@ class InstanceService:
                 creation_date=instance_data.creation_date
             )
 
-            # ## Manage ipv4 list
-            # for ipv4_address in instance_data.ip_v4_list:
-            #     db_instance.ip_v4_list.append(Ipv4ORM(ip=ipv4_address))
-            # ## Manage ipv6 list
-            # for ipv6_address in instance_data.ip_v6_list:
-            #     db_instance.ip_v6_list.append(Ipv6ORM(ip=ipv6_address))
-
             db.add(db_instance)
             db.commit()
+            logger.info(f"Instance with ipv4 address :{instance_data.main_ipv4} successfully registred")
             db.refresh(db_instance)
 
             ## Manage virtualization methods

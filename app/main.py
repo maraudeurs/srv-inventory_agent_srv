@@ -7,8 +7,6 @@ from app.models.database import SessionLocal, engine
 from app.api.v1.routes import instance_route, auth_route
 from app.models.database import init_db, purge_db
 
-
-
 ## Manage lifespan event
 @asynccontextmanager
 async def lifespan(app: FastAPI):

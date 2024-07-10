@@ -28,7 +28,5 @@ def create_instance(instance_data: InstanceCreate, db: Session = Depends(get_db)
         instance: instance object
     """
 
-    print(instance_data)
-
     instance = instance_service.create_instance(db, instance_data)
     return instance
