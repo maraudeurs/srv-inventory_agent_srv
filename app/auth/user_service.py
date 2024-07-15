@@ -35,25 +35,25 @@ def authenticate_user(db, username: str, password: str) -> Optional[ORMUser]:
         return None
     return user
 
-def create_user(db, user: UserCreate):
-    try:
-        db_user = db.query(ORMUser).filter(ORMUser.email == user.email).first()
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="cannot search user in database")
+# def create_user(db, user: UserCreate):
+#     try:
+#         db_user = db.query(ORMUser).filter(ORMUser.email == user.email).first()
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail="cannot search user in database")
 
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+#     if db_user:
+#         raise HTTPException(status_code=400, detail="Email already registered")
 
-    hashed_password = get_password_hash(user.password)
-    db_user = ORMUser(username=user.username, email=user.email, hashed_password=hashed_password)
-    try:
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-        return db_user
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="Error creating user")
+#     hashed_password = get_password_hash(user.password)
+#     db_user = ORMUser(username=user.username, email=user.email, hashed_password=hashed_password)
+#     try:
+#         db.add(db_user)
+#         db.commit()
+#         db.refresh(db_user)
+#         return db_user
+#     except Exception as e:
+#         db.rollback()
+#         raise HTTPException(status_code=400, detail="Error creating user")
 
 
 async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2bearer)):

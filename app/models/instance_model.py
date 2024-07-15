@@ -1,8 +1,15 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
 from sqlalchemy.orm import declarative_base, Mapped, relationship, mapped_column
 from typing import List
 
 Base = declarative_base()
+
+instance_virtualizationmethod_association = Table(
+    'instance_virtualization_method',
+    Base.metadata,
+    Column('instance_id', Integer, ForeignKey('instance.id'), primary_key=True),
+    Column('virtualization_method_id', Integer, ForeignKey('virtualization_method.id'), primary_key=True)
+)
 
 class Instance(Base):
     __tablename__ = 'instance'
@@ -16,6 +23,9 @@ class Instance(Base):
     ip_v6_list: Mapped[List["Ipv6"]] = relationship("Ipv6", back_populates="instance", cascade="all, delete-orphan")
     # ip_v6_list = relationship("Ipv6", back_populates="instance", cascade="all, delete-orphan")
     status = Column(String)
+    main_group = Column(String)
+    environment = Column(String, nullable=True)
+    ansible_ssh_user = Column(String)
     main_usage = Column(String, nullable=True)
     location = Column(String, nullable=True)
     tag = Column(String, nullable=True)
@@ -31,20 +41,30 @@ class Instance(Base):
     system_os = Column(String, nullable=True)
     system_release = Column(String, nullable=True)
     system_architecture = Column(String, nullable=True)
-    hostname = Column(String)
+    hostname = Column(String, nullable=True)
     python_version = Column(String, nullable=True)
-    virtualization_method: Mapped[List["VirtualizationMethod"]] = relationship()
     update_date = Column(DateTime)
     creation_date = Column(DateTime)
+
+    ## Define the many-to-many relationship
+    virtualization_method = relationship(
+        "VirtualizationMethod",
+        secondary=instance_virtualizationmethod_association,
+        back_populates="instances"
+    )
 
 class VirtualizationMethod(Base):
     __tablename__ = 'virtualization_method'
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String, index=True)
-    instance: Mapped["Instance"] = relationship(back_populates="virtualization_method")
-    instance_id: Mapped[int] = mapped_column(ForeignKey("instance.id"))
+    id= Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String, unique=True, index=True)
 
+    ## Define the many-to-many relationship
+    instances= relationship(
+        "Instance",
+        secondary=instance_virtualizationmethod_association,
+        back_populates="virtualization_method"
+    )
 
 class Ipv4(Base):
     __tablename__ = 'ipv4'
@@ -53,8 +73,6 @@ class Ipv4(Base):
     ip = Column(String, index=True)
     instance_id: Mapped[int] = mapped_column(ForeignKey("instance.id"))
     instance: Mapped["Instance"] = relationship(back_populates="ip_v4_list")
-    # instance = relationship("Instance", back_populates="ip_v4_list")
-    # instance_id = Column(Integer, ForeignKey('instance.id'))
 
 class Ipv6(Base):
     __tablename__ = 'ipv6'
@@ -63,5 +81,3 @@ class Ipv6(Base):
     ip = Column(String, index=True)
     instance_id: Mapped[int] = mapped_column(ForeignKey("instance.id"))
     instance: Mapped["Instance"] = relationship(back_populates="ip_v6_list")
-    # instance = relationship("Instance", back_populates="ip_v6_list")
-    # instance_id = Column(Integer, ForeignKey('instance.id'))

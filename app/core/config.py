@@ -3,8 +3,8 @@ import os
 
 class Settings(BaseSettings):
     database_url: str
-    log_level: str
-    log_output: str
+    log_level: str = "INFO"
+    log_output: str = "stdout"
     log_file: str = "/var/log/srv_inventory_clt.log"
     app_name: str = "inventory_agent_srv"
     discovery_generic_user: str
@@ -15,15 +15,16 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int ="60"
+    default_ssh_user: str
 
     class Config:
+        ## don't pass file, will load from os env var
         pass
-        # env_file = ".env"
 
 class TestSettings(Settings):
     debug: bool = True
-    # log_level: str = "DEBUG"
-    # log_output: str = "stdout"
+    log_level: str = "DEBUG"
+    log_output: str = "stdout"
 
     class Config:
         env_file = "test.env"

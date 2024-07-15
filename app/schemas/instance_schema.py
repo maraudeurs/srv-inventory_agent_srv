@@ -1,6 +1,7 @@
 from pydantic import BaseModel, field_serializer
 from typing import Optional, List
 from datetime import date, datetime
+from app.core.config import settings
 
 ## ipv4 relation
 class Ipv4Base(BaseModel):
@@ -30,16 +31,16 @@ class Ipv6(Ipv6Base):
     class Config:
         orm_mode = True
 
-## virtualization_methodrelation
-class Virtualization_methodBase(BaseModel):
+## virtualization_method relation
+class VirtualizationMethodBase(BaseModel):
     name: str
 
-class Virtualization_methodCreate(Virtualization_methodBase):
+class VirtualizationMethodCreate(VirtualizationMethodBase):
     pass
 
-class Virtualization_method(Virtualization_methodBase):
+class VirtualizationMethod(VirtualizationMethodBase):
     id: int
-    instance_id: int
+
 
     class Config:
         orm_mode = True
@@ -50,6 +51,9 @@ class InstanceBase(BaseModel):
     description: Optional[str] = None
     main_ipv4 : Optional[str] = None
     status: str
+    main_group: Optional[str] = None
+    environment: Optional[str] = None
+    ansible_ssh_user: Optional[str] = str(settings.default_ssh_user)
     main_usage: Optional[str] = None
     location: Optional[str] = None
     tag: Optional[str] = None
@@ -65,23 +69,28 @@ class InstanceBase(BaseModel):
     system_os: Optional[str] = None
     system_release: Optional[str] = None
     system_architecture: Optional[str] = None
-    hostname: str
+    hostname: Optional[str] = None
     python_version: Optional[str] = None
+
     update_date: datetime
     creation_date: datetime = None
-
-class InstanceCreate(InstanceBase):
-    ip_v4_list: Optional[List[str]] = None
-    ip_v6_list: Optional[List[str]] = None
-    virtualization_method: Optional[list[str]] = None
-
-class Instance(InstanceBase):
-    id: int
 
     class Config:
         ## Allows Pydantic to serialize/deserialize SQLAlchemy models
         orm_mode = True
         from_attributes=True
+
+class InstanceCreate(InstanceBase):
+    virtualization_method: List[str]
+    ip_v4_list: Optional[List[str]] = None
+    ip_v6_list: Optional[List[str]] = None
+
+class Instance(InstanceBase):
+    id: int
+    virtualization_method: List[VirtualizationMethod]
+    ip_v4_list: Optional[List[Ipv4]]
+    ip_v6_list: Optional[List[Ipv6]]
+
 
 
 

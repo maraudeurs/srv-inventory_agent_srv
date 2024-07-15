@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 
 from app.models.database_data_handler_utils import manage_instance_creation_date
 from app.models.instance_model import Instance as InstanceORM, Ipv4 as Ipv4ORM, Ipv6 as Ipv6ORM, VirtualizationMethod as VirtualizationMethodORM
-from app.schemas.instance_schema import Instance, InstanceCreate, Ipv4, Ipv6, Virtualization_method
+from app.schemas.instance_schema import Instance, InstanceCreate, Ipv4, Ipv6, VirtualizationMethod, VirtualizationMethodCreate
 from app.dependencies import logger
 
 class InstanceService:
@@ -26,8 +26,20 @@ class InstanceService:
                 description=instance_data.description,
                 main_ipv4=instance_data.main_ipv4,
                 status=instance_data.status,
-                # instance_memory=instance_data.instance_memory,
-                # instance_cpu=instance_data.instance_cpu,
+                main_group=instance_data.main_group,
+                environment=instance_data.environment,
+                ansible_ssh_user=instance_data.ansible_ssh_user,
+                main_usage=instance_data.main_usage,
+                location=instance_data.location,
+                tag=instance_data.tag,
+                cloud_model=instance_data.cloud_model,
+                cloud_provider=instance_data.cloud_provider,
+                provider_uuid=instance_data.provider_uuid,
+                instance_memory=instance_data.instance_memory,
+                instance_cpu=instance_data.instance_cpu,
+                in_bandwidth=instance_data.in_bandwidth,
+                out_bandwidth=instance_data.out_bandwidth,
+                cloud_service_type=instance_data.cloud_service_type,
                 inventory_source_method=instance_data.inventory_source_method,
                 system_os=instance_data.system_os,
                 system_release=instance_data.system_release,
@@ -35,40 +47,44 @@ class InstanceService:
                 hostname=instance_data.hostname,
                 python_version=instance_data.python_version,
                 update_date=instance_data.update_date,
-                creation_date=instance_data.creation_date
+                creation_date=instance_data.creation_date,
             )
+
+
+            # Create or get virtualization methods and associate them with the instance
+            for method in instance_data.virtualization_method:
+                db_method = db.query(VirtualizationMethodORM).filter(VirtualizationMethodORM.name == method).first()
+                if db_method is None:
+                    db_method = VirtualizationMethodORM(name=method)
+                    db.add(db_method)
+                db_instance.virtualization_method.append(db_method)
+
 
             db.add(db_instance)
             db.commit()
-            logger.info(f"Instance with ipv4 address :{instance_data.main_ipv4} successfully registred")
-            db.refresh(db_instance)
-
-            ## Manage virtualization methods
-            for virtualization_method in instance_data.virtualization_method:
-                virtualization_method_orm_object = VirtualizationMethodORM(instance_id=db_instance.id, name=virtualization_method)
-                db.add(virtualization_method_orm_object)
-            db.commit()
-            db.refresh(db_instance)
 
             ## Manage ipv4 list
             for ipv4_address in instance_data.ip_v4_list:
                 ipv4_address_orm_object = Ipv4ORM(instance_id=db_instance.id, ip=ipv4_address)
                 db.add(ipv4_address_orm_object)
             db.commit()
-            db.refresh(db_instance)
 
             ## Manage ipv6 list
             for ipv6_address in instance_data.ip_v6_list:
                 ipv6_address_orm_object = Ipv6ORM(instance_id=db_instance.id, ip=ipv6_address)
                 db.add(ipv6_address_orm_object)
             db.commit()
+
+            ## add instance to db
             db.refresh(db_instance)
+            logger.info(f"Instance with ipv4 address : {instance_data.main_ipv4} successfully registered")
+
+            return db_instance
 
         except Exception as e:
                 db.rollback()
                 return {"error": str(e)}, 400
 
-        return Instance.from_orm(db_instance)
 
     def validate_instance_availability(self, instance: Instance) -> Instance:
         """check instance availability """

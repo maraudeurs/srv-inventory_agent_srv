@@ -9,27 +9,27 @@ from app.models.user_model import User as ORMUser
 from app.schemas.user_schema import User, UserCreate
 from app.schemas.token_schema import Token, TokenData
 from app.dependencies import get_db
-from app.auth.user_service import get_user, create_user, authenticate_user, get_current_active_user, oauth2bearer
+from app.auth.user_service import get_user, authenticate_user, get_current_active_user, oauth2bearer
 from app.auth.token_service import create_access_token
 from app.core.config import settings
 
 router = APIRouter()
 
-@router.post("/register", response_model=User)
-def register_user(payload: UserCreate, db: Session = Depends(get_db)):
-    if not payload.username:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Please add Username",
-        )
-    user = get_user(db, payload.username)
-    if user:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"Email already registered",
-        )
-    user = create_user(db, payload)
-    return user
+# @router.post("/register", response_model=User)
+# def register_user(payload: UserCreate, db: Session = Depends(get_db)):
+#     if not payload.username:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Please add Username",
+#         )
+#     user = get_user(db, payload.username)
+#     if user:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail=f"Email already registered",
+#         )
+#     user = create_user(db, payload)
+#     return user
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db))-> Token:

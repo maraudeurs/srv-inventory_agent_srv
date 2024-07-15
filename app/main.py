@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 from app.models.database import SessionLocal, engine
 
-from app.api.v1.routes import instance_route, auth_route
+from app.api.v1.routes import instance_route, auth_route, inventory_route
 from app.models.database import init_db, purge_db
 
 ## Manage lifespan event
@@ -29,4 +29,5 @@ app = FastAPI(lifespan=lifespan)
 
 ## Include routers
 app.include_router(instance_route.router, prefix="/v1", tags=["instances"])
+app.include_router(inventory_route.router, prefix="/v1", tags=["inventory"])
 app.include_router(auth_route.router, prefix="/v1", tags=["auth"])
