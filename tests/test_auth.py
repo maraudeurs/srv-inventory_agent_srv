@@ -37,7 +37,7 @@ def test_login(test_client, db_session):
 def test_invalid_login(test_client, db_session):
     response = test_client.post(
         "/v1/token/",
-        data={"username": "testuser3", "email": "test@example.com", "password": "wrongpassword"}
+        data={"username": "testuser3", "email": "test@wwww.com", "password": "wrongpassword"}
     )
     assert response.status_code == 401
     data = response.json()
