@@ -1,66 +1,7 @@
 pipeline {
     agent any
 
-    options {
-        ansiColor('css')
-    }
-
-    environment {
-        DOCKER_REGISTRY = "registry.hub.docker.com"
-        DOCKER_IMAGE_NAME = "webdronesas/inventory_agent_srv"
-        DOCKER_IMAGE_TAG = "test-cicd"
-        GIT_REPO_URL = "https://github.com/maraudeurs/srv-inventory_agent_srv.git"
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scmGit(
-                    branches: [[name: 'main']],
-                    extensions: [[ $class: 'CloneOption', noTags: false, shallow: false, depth: 0, reference: '' ]]
-                    // userRemoteConfigs: [[credentialsId: 'wddeploy_github_token', url: "${GIT_REPO_URL}" ]]
-                    )
-            }
-
-        stage('Docker Lint') {
-            steps {
-                script {
-                    sh 'docker run --rm -i hadolint/hadolint < Dockerfile'
-                }
-            }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}")
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    docker.withRegistry("https://${DOCKER_REGISTRY}", 'webdrone_dockerhub_token') {
-                        docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").push()
-                    }
-                }
-            }
-        }
-
-        stage('Purge Docker Image') {
-            steps{
-                sh "docker rmi ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-
-
-            }
-        }
-
-    }
-}
-
-
-pipeline {
-    agent any
+    description('build and push inventory_agent_srv docker image')
 
     environment {
         DOCKER_REGISTRY = "registry.hub.docker.com"
@@ -101,24 +42,6 @@ pipeline {
             }
         }
 
-        // stage ("Bats testing") {
-        //     agent {
-        //         docker {
-        //             image('bats/bats:latest')
-        //             args ('-v ./tests:/dvb --entrypoint=""')
-        //         }
-        //     }
-        //     steps {
-        //         script {
-        //             def testFiles = sh(script: "ls ./${env.TESTDIRECTORY}/*.bats", returnStdout: true).trim().split('\n')
-        //             testFiles.each { testFile ->
-        //                 sh "bats ${testFile}"
-        //             }
-        //         }
-        //     }
-        // }
-
-
         stage ("Hadolint") {
             agent {
                 docker {
@@ -127,12 +50,6 @@ pipeline {
             }
             steps {
                 sh('hadolint --config .hadolint.yaml Dockerfile')
-            }
-        }
-
-        stage('Yamllint') {
-            steps{
-                sh('docker run --rm --user yamllint -v $(pwd):/data contane/yamllint -c ./.yamllint/.yamllint_conf -f colored .')
             }
         }
 
