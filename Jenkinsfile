@@ -1,8 +1,6 @@
 pipeline {
     agent any
 
-    description('build and push inventory_agent_srv docker image')
-
     environment {
         DOCKER_REGISTRY = "registry.hub.docker.com"
         DOCKER_IMAGE_NAME = "webdronesas/inventory_agent_srv"
