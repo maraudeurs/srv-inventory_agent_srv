@@ -5,7 +5,8 @@ FROM python:${PYTHON_VERSION}-slim as builder
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq-dev \
         tzdata \
-        gcc
+        gcc \
+        python3-dev
 
 COPY requirements.txt .
 
