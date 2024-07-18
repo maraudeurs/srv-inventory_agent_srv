@@ -8,6 +8,10 @@ technical data :
 - backend : fastapi
 - database / orm : postgresql / SQLAlchemy
 
+## prerequisite
+
+- Set mandatory env var : see [example.env file](./example.env)
+
 ## Usage
 
 ### Classic python script
