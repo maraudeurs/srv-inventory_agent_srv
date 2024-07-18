@@ -4,7 +4,8 @@ FROM python:${PYTHON_VERSION}-slim as builder
 ## install pip requirements dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq-dev \
-        tzdata
+        tzdata \
+        gcc
 
 COPY requirements.txt .
 
