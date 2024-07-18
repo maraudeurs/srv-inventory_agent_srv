@@ -83,6 +83,24 @@ def test_instance(db_session):
     return test_instance
 
 @pytest.fixture(scope="function")
+def test_instance_list(db_session):
+    """Add multiple test instances to the database."""
+
+    instance_list = [
+        Instance(name="test1",main_ipv4="127.0.0.3",status="active",update_date=current_datetime,creation_date=current_datetime),
+        Instance(name="test2",main_ipv4="127.0.0.4",status="deleted",update_date=current_datetime,creation_date=current_datetime),
+        Instance(name="test3",main_ipv4="127.0.0.5",status="down",update_date=current_datetime,creation_date=current_datetime),
+        Instance(name="test4",main_ipv4="127.0.0.6",status="test",update_date=current_datetime,creation_date=current_datetime),
+    ]
+    for instance in instance_list:
+        db_session.add(instance)
+        db_session.commit()
+        db_session.refresh(instance)
+        assert instance.id is not None
+    return instance_list
+
+
+@pytest.fixture(scope="function")
 def db_session():
     """Create a new database session with a rollback at the end of the test."""
     connection = engine.connect()

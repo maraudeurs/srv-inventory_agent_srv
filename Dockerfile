@@ -1,13 +1,30 @@
-ARG PYTHON_VERSION=3.10
+ARG PYTHON_VERSION=3.11
+FROM python:${PYTHON_VERSION}-slim as builder
+
+COPY requirements.txt .
+
+## Pip dependencies
+ENV PYTHONDONTWRITEBYTECODE=1
+ARG PYTHONUNBUFFERED=1
+RUN pip install --user --no-cache-dir --upgrade -r requirements.txt
+
+## final image
+ARG PYTHON_VERSION=3.11
 FROM python:${PYTHON_VERSION}-slim
 
-ENV PYTHONUNBUFFERED 1
+ARG AGENT_SRV_USER="inventory_agent_clt"
+ARG AGENT_SRV_GROUP=${AGENT_SRV_USER}
+ENV PATH=/root/.local/bin:$PATH
 ENV TZ=Europe/Paris
 
+RUN groupadd -r ${AGENT_SRV_GROUP} && useradd -r -g ${AGENT_SRV_GROUP} ${AGENT_SRV_USER}
+
 WORKDIR /app
-COPY . /app
-COPY --chown=${DVB_USER} --chmod=700 * ${WORKDIR}
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --from=builder /root/.local /root/.local
+COPY --chown=${AGENT_SRV_USER} --chmod=700 app ${WORKDIR}
+
+USER ${AGENT_SRV_USER}
 
 EXPOSE 80
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+
+CMD ["fastapi", "run", "app/main.py", "--port", "80"]

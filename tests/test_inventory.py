@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from app.models.user_model import User
 
-def test_get_inventory(test_client, db_session, test_user):
+def test_get_inventory(test_client, db_session, test_user, test_instance_list):
     ## first get token to access protected route
     response = test_client.post(
         "/v1/token/",
