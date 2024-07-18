@@ -6,7 +6,7 @@ pipeline {
         DOCKER_IMAGE_NAME = "webdronesas/inventory_agent_srv"
         DOCKER_HUB_CREDENTIAL_ID = "webdrone_dockerhub_token"
         MICROSOFT_TEAMS_WEBHOOK_CREDENTIAL_ID = "infra_cicd_teams_webhook_url"
-        GIT_REPO_URL = "https://github.com/maraudeurs/srv-inventory_agent_srv.git"
+        GIT_REPO_URL = "https://github.com/webdrone-infra/srv-inventory_agent_srv.git"
         GIT_CREDENTIAL_ID = "wddeploy_github_token"
         GIT_BRANCH = "*/main"
         TESTDIRECTORY = "tests"
