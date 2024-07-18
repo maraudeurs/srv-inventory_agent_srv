@@ -1,6 +1,11 @@
 ARG PYTHON_VERSION=3.11
 FROM python:${PYTHON_VERSION}-slim as builder
 
+## install pip requirements dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libpq-dev \
+        tzdata \
+
 COPY requirements.txt .
 
 ## Pip dependencies
