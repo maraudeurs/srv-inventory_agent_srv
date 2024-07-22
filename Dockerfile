@@ -27,7 +27,7 @@ ENV TZ=Europe/Paris
 RUN groupadd -r ${AGENT_SRV_GROUP} && useradd -r -g ${AGENT_SRV_GROUP} ${AGENT_SRV_USER}
 
 WORKDIR /app
-COPY --from=builder /root/.local /root/.local
+COPY --chown=${AGENT_SRV_USER} --from=builder /root/.local /root/.local
 COPY --chown=${AGENT_SRV_USER} --chmod=700 app ${WORKDIR}
 
 USER ${AGENT_SRV_USER}
