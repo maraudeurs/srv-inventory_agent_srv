@@ -28,11 +28,8 @@ RUN useradd -r -u 1001 ${AGENT_SRV_USER}
 WORKDIR /app
 
 COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local /usr/local
-COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local/bin /usr/local/bin
 COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages
 COPY --chmod=700 --chown=${AGENT_SRV_USER} app ${WORKDIR}
-
-RUN chown -R ${AGENT_SRV_USER} /root/.local
 
 USER ${AGENT_SRV_USER}
 
