@@ -13,7 +13,7 @@ COPY requirements.txt .
 ## Pip dependencies
 ENV PYTHONDONTWRITEBYTECODE=1
 ARG PYTHONUNBUFFERED=1
-RUN pip install --user --no-cache-dir --upgrade -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/usr/local --upgrade -r requirements.txt
 
 ## final image
 FROM python:${PYTHON_VERSION}-slim
@@ -27,7 +27,7 @@ RUN useradd -r -u 1001 ${AGENT_SRV_USER}
 
 WORKDIR /app
 
-COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /root/.local /root/.local
+COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local /usr/local
 COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local/bin /usr/local/bin
 COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages
 COPY --chmod=700 --chown=${AGENT_SRV_USER} app ${WORKDIR}
