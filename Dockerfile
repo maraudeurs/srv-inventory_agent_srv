@@ -31,7 +31,7 @@ WORKDIR /app
 
 ## install final images packages dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpython3.7 \
+    libpython3.11 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local /usr/local
