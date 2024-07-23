@@ -16,8 +16,8 @@ ARG PYTHONUNBUFFERED=1
 RUN pip install --user --no-cache-dir --upgrade -r requirements.txt
 
 ## final image
-ARG PYTHON_VERSION=3.11
-FROM python:${PYTHON_VERSION}-slim
+ARG FINAL_PYTHON_VERSION=3.11
+FROM python:${FINAL_PYTHON_VERSION}-slim
 
 ARG AGENT_SRV_USER="inventory_agent_clt"
 ARG AGENT_SRV_GROUP=${AGENT_SRV_USER}
@@ -30,7 +30,7 @@ WORKDIR /app
 
 COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --from=builder /root/.local /root/.local
 COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --from=builder /usr/local/bin /usr/local/bin
-COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --from=builder /usr/local/lib/python${PYTHON_VERSION}/site-packages /usr/local/lib/python${PYTHON_VERSION}/site-packages
+COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --from=builder /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages
 COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --chmod=700 app ${WORKDIR}
 
 USER ${AGENT_SRV_USER}
