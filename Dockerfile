@@ -22,10 +22,11 @@ ARG FINAL_PYTHON_VERSION=3.11
 ARG AGENT_SRV_USER="inventory_agent_clt"
 ENV PATH=/usr/local/bin:$PATH
 ENV TZ=Europe/Paris
+ENV APPDIR=/app
 
 RUN useradd -r ${AGENT_SRV_USER}
 
-WORKDIR /app
+WORKDIR /
 
 ## install final images packages dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -34,7 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=builder --chmod=755 --chown=${AGENT_SRV_USER} /usr/local /usr/local
 COPY --from=builder --chmod=755 --chown=${AGENT_SRV_USER} /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages
-COPY --chmod=755 --chown=${AGENT_SRV_USER} app ${WORKDIR}
+COPY --chmod=755 --chown=${AGENT_SRV_USER} app ${APPDIR}
 
 USER ${AGENT_SRV_USER}
 
@@ -43,5 +44,5 @@ USER ${AGENT_SRV_USER}
 
 EXPOSE 8000
 
-ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
 
