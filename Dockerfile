@@ -16,8 +16,10 @@ ARG PYTHONUNBUFFERED=1
 RUN pip install --user --no-cache-dir --upgrade -r requirements.txt
 
 ## final image
+FROM python:${PYTHON_VERSION}-slim
 ARG FINAL_PYTHON_VERSION=3.11
-FROM python:${FINAL_PYTHON_VERSION}-slim
+
+
 
 ARG AGENT_SRV_USER="inventory_agent_clt"
 ARG AGENT_SRV_GROUP=${AGENT_SRV_USER}
