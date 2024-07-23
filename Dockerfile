@@ -23,7 +23,7 @@ ARG AGENT_SRV_USER="inventory_agent_clt"
 ENV PATH=/root/.local/bin:$PATH
 ENV TZ=Europe/Paris
 
-RUN useradd -r ${AGENT_SRV_USER}
+RUN useradd -r -u 1001 ${AGENT_SRV_USER}
 
 WORKDIR /app
 
