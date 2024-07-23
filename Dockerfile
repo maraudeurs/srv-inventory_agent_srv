@@ -29,6 +29,11 @@ RUN useradd -r ${AGENT_SRV_USER}
 
 WORKDIR /app
 
+## install final images packages dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpython3.7 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local /usr/local
 COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages
 COPY --chmod=700 --chown=${AGENT_SRV_USER} app ${WORKDIR}
