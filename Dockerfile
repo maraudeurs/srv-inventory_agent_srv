@@ -27,11 +27,18 @@ ENV TZ=Europe/Paris
 RUN groupadd -r ${AGENT_SRV_GROUP} && useradd -r -g ${AGENT_SRV_GROUP} ${AGENT_SRV_USER}
 
 WORKDIR /app
-COPY --chown=${AGENT_SRV_USER} --from=builder /root/.local /root/.local
-COPY --chown=${AGENT_SRV_USER} --chmod=700 app ${WORKDIR}
+
+COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --from=builder /root/.local /root/.local
+COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --from=builder /usr/local/bin /usr/local/bin
+COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --from=builder /usr/local/lib/python${PYTHON_VERSION}/site-packages /usr/local/lib/python${PYTHON_VERSION}/site-packages
+COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --chmod=700 app ${WORKDIR}
 
 USER ${AGENT_SRV_USER}
 
-EXPOSE 80
+# HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+#     CMD curl -f http://localhost:8000/health || exit 1
 
-CMD ["fastapi", "run", "app/main.py", "--port", "80"]
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+
