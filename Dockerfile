@@ -20,10 +20,8 @@ FROM python:${PYTHON_VERSION}-slim
 ARG FINAL_PYTHON_VERSION=3.11
 
 ARG AGENT_SRV_USER="inventory_agent_clt"
-ENV PATH=/root/.local/bin:$PATH
+ENV PATH=/usr/local/bin:$PATH
 ENV TZ=Europe/Paris
-## env var for python library search path
-ENV LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
 
 RUN useradd -r ${AGENT_SRV_USER}
 
@@ -34,9 +32,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpython3.11 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local /usr/local
-COPY --from=builder --chmod=700 --chown=${AGENT_SRV_USER} /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages
-COPY --chmod=700 --chown=${AGENT_SRV_USER} app ${WORKDIR}
+COPY --from=builder --chmod=755 --chown=${AGENT_SRV_USER} /usr/local /usr/local
+COPY --from=builder --chmod=755 --chown=${AGENT_SRV_USER} /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages
+COPY --chmod=755 --chown=${AGENT_SRV_USER} app ${WORKDIR}
 
 USER ${AGENT_SRV_USER}
 
