@@ -19,8 +19,6 @@ RUN pip install --user --no-cache-dir --upgrade -r requirements.txt
 FROM python:${PYTHON_VERSION}-slim
 ARG FINAL_PYTHON_VERSION=3.11
 
-
-
 ARG AGENT_SRV_USER="inventory_agent_clt"
 ARG AGENT_SRV_GROUP=${AGENT_SRV_USER}
 ENV PATH=/root/.local/bin:$PATH
@@ -30,10 +28,10 @@ RUN groupadd -r ${AGENT_SRV_GROUP} && useradd -r -g ${AGENT_SRV_GROUP} ${AGENT_S
 
 WORKDIR /app
 
-COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --from=builder /root/.local /root/.local
-COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --from=builder /usr/local/bin /usr/local/bin
-COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --from=builder /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages
-COPY --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} --chmod=700 app ${WORKDIR}
+COPY --from=builder --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} /root/.local /root/.local
+COPY --from=builder --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} /usr/local/bin /usr/local/bin
+COPY --from=builder --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages /usr/local/lib/python${FINAL_PYTHON_VERSION}/site-packages
+COPY --chmod=700 --chown=${AGENT_SRV_USER}:${AGENT_SRV_GROUP} app ${WORKDIR}
 
 USER ${AGENT_SRV_USER}
 
