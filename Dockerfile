@@ -22,8 +22,10 @@ ARG FINAL_PYTHON_VERSION=3.11
 ARG AGENT_SRV_USER="inventory_agent_clt"
 ENV PATH=/root/.local/bin:$PATH
 ENV TZ=Europe/Paris
+## env var for python library search path
+ENV LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
 
-RUN useradd -r -u 1001 ${AGENT_SRV_USER}
+RUN useradd -r ${AGENT_SRV_USER}
 
 WORKDIR /app
 
