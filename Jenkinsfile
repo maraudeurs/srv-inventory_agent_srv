@@ -117,6 +117,12 @@ pipeline {
             }
         }
         failure {
+            // delete tag to avoid error with existing tag
+            withCredentials([usernamePassword(credentialsId: "${GIT_CREDENTIAL_ID}", passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                sh("git tag -d ${INCREMENTEDVERSION}")
+                sh("git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_REPO_URL} --delete ${INCREMENTEDVERSION}")
+            }
+
             withCredentials([string(credentialsId: "${MICROSOFT_TEAMS_WEBHOOK_CREDENTIAL_ID}", variable: "ms_teams_webhook_url")]) {
                 office365ConnectorSend webhookUrl: "${ms_teams_webhook_url}",
                 message: "Job : ${env.JOB_NAME}, build : ${BUILD_NUMBER}, result : image ${env.DOCKER_IMAGE_NAME} failed to build and push",
